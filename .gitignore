@@ -1,0 +1,22 @@
+node_modules/
+uploads/*
+!uploads/.gitkeep
+.env
+.env.deploy
+.DS_Store
+npm-debug.log*
+
+# InsForge & AI agent skills
+.insforge
+.agent
+.agents
+.augment
+.claude
+.cline
+.github/copilot*
+.kilocode
+.qoder
+.qwen
+.roo
+.trae
+.windsurf

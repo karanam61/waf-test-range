@@ -1,0 +1,2 @@
+Internal notes — sample file only.
+Environment: waf-test-range staging.

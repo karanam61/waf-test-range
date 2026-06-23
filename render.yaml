@@ -1,0 +1,16 @@
+# Deploy waf-test-range on Render (https://render.com)
+# 1. Push repo to GitHub
+# 2. Render → New → Web Service → connect repo
+# 3. Render detects this file automatically
+# 4. Add env vars if using InsForge DB (optional):
+#    INSFORGE_HOST, INSFORGE_API_KEY
+
+services:
+  - type: web
+    name: waf-test-range
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 3000

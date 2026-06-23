@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — WAF Test Range</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>WAF Test Range</h1>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/about.html">About</a>
+      <a href="/search.html">Search</a>
+      <a href="/login.html">Login</a>
+      <a href="/upload.html">Upload</a>
+      <a href="/profile.html">Profile</a>
+      <a href="/comments.html">Comments</a>
+    </nav>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Sign In</button>
+      </form>
+      <pre id="result" class="result" style="display:none;"></pre>
+    </div>
+  </main>
+  <footer>&copy; <span id="year"></span> WAF Test Range</footer>
+  <script src="/js/main.js"></script>
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const data = await postJson("/api/login", { username, password });
+      const out = document.getElementById("result");
+      out.style.display = "block";
+      out.textContent = JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>
