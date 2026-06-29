@@ -30,6 +30,16 @@ if (!fs.existsSync(uploadsDir)) {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Let's Encrypt HTTP-01 (set ACME_TOKEN + ACME_KEY env vars during issuance only)
+app.get("/.well-known/acme-challenge/:token", (req, res) => {
+  const expected = process.env.ACME_TOKEN;
+  const body = process.env.ACME_KEY;
+  if (expected && body && req.params.token === expected) {
+    return res.type("text/plain").send(body);
+  }
+  res.status(404).send("not found");
+});
+
 app.use("/uploads", express.static(uploadsDir));
 app.use(express.static(path.join(__dirname, "public")));
 
