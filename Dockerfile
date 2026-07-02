@@ -5,9 +5,9 @@ RUN apt-get update && apt-get install -y python3 make g++ \
 COPY package.json ./
 RUN npm install --production
 COPY . .
-RUN mkdir -p uploads data
+RUN mkdir -p uploads var
 EXPOSE 3000
 ENV PORT=3000
-ENV DB_PATH=/app/data/waf.db
-VOLUME ["/app/data"]
+ENV DB_PATH=/app/var/waf.db
+VOLUME ["/app/var"]
 CMD ["node", "server.js"]

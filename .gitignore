@@ -4,6 +4,8 @@ uploads/*
 !uploads/.gitkeep
 data/*.db
 data/*.db-*
+var/*.db
+var/*.db-*
 .env
 .env.deploy
 .DS_Store
