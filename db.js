@@ -1,41 +1,45 @@
 const fs = require("fs");
 const path = require("path");
+const Database = require("better-sqlite3");
 
-const TABLE = "waf_events";
+const DB_PATH =
+  process.env.DB_PATH || path.join(__dirname, "data", "waf.db");
 
-function loadInsforgeConfig() {
-  const host = process.env.INSFORGE_HOST;
-  const apiKey = process.env.INSFORGE_API_KEY;
-  if (host && apiKey) {
-    return { host, apiKey };
-  }
-
-  try {
-    const projectFile = path.join(__dirname, "..", ".insforge", "project.json");
-    if (fs.existsSync(projectFile)) {
-      const proj = JSON.parse(fs.readFileSync(projectFile, "utf8"));
-      return {
-        host: proj.oss_host || "",
-        apiKey: proj.api_key || "",
-      };
-    }
-  } catch (_) {
-    // ignore
-  }
-
-  return { host: "", apiKey: "" };
+const dataDir = path.dirname(DB_PATH);
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
 }
 
-const { host: INSFORGE_HOST, apiKey: INSFORGE_API_KEY } = loadInsforgeConfig();
-const BASE_URL = INSFORGE_HOST ? `${INSFORGE_HOST}/api/database/records/${TABLE}` : "";
+const db = new Database(DB_PATH);
 
-const headers = {
-  Authorization: `Bearer ${INSFORGE_API_KEY}`,
-  "Content-Type": "application/json",
-};
+db.exec(`
+  CREATE TABLE IF NOT EXISTS waf_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_type TEXT NOT NULL,
+    payload TEXT NOT NULL,
+    client_ip TEXT,
+    user_agent TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_waf_events_type_created
+    ON waf_events (event_type, created_at DESC);
+`);
+
+const insertStmt = db.prepare(`
+  INSERT INTO waf_events (event_type, payload, client_ip, user_agent, created_at)
+  VALUES (@event_type, @payload, @client_ip, @user_agent, @created_at)
+`);
+
+const listStmt = db.prepare(`
+  SELECT id, event_type, payload, client_ip, user_agent, created_at
+  FROM waf_events
+  WHERE event_type = ?
+  ORDER BY created_at DESC
+  LIMIT ?
+`);
 
 function isConfigured() {
-  return Boolean(BASE_URL && INSFORGE_API_KEY);
+  return true;
 }
 
 function getClientMeta(req) {
@@ -48,58 +52,56 @@ function getClientMeta(req) {
   };
 }
 
-async function insertEvent(eventType, payload, req) {
-  if (!isConfigured()) {
-    console.warn("[db] InsForge not configured — event not persisted:", eventType);
-    return null;
+function rowToRecord(row) {
+  if (!row) return null;
+  let payload = {};
+  try {
+    payload = JSON.parse(row.payload);
+  } catch (_) {
+    payload = { raw: row.payload };
   }
-
-  const meta = req ? getClientMeta(req) : { client_ip: null, user_agent: null };
-  const row = {
-    event_type: eventType,
+  return {
+    id: row.id,
+    event_type: row.event_type,
     payload,
-    client_ip: meta.client_ip,
-    user_agent: meta.user_agent,
+    client_ip: row.client_ip,
+    user_agent: row.user_agent,
+    created_at: row.created_at,
   };
-
-  const res = await fetch(BASE_URL, {
-    method: "POST",
-    headers: {
-      ...headers,
-      Prefer: "return=representation",
-    },
-    body: JSON.stringify([row]),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`DB insert failed (${res.status}): ${text}`);
-  }
-
-  const rows = await res.json();
-  return rows[0] || null;
 }
 
-async function listByType(eventType, limit = 500) {
-  if (!isConfigured()) {
-    return [];
-  }
+function insertEvent(eventType, payload, req) {
+  const meta = req ? getClientMeta(req) : { client_ip: null, user_agent: null };
+  const createdAt = new Date().toISOString();
 
-  const url = `${BASE_URL}?event_type=eq.${encodeURIComponent(eventType)}&order=created_at.desc&limit=${limit}`;
-  const res = await fetch(url, { headers });
+  const result = insertStmt.run({
+    event_type: eventType,
+    payload: JSON.stringify(payload ?? {}),
+    client_ip: meta.client_ip,
+    user_agent: meta.user_agent,
+    created_at: createdAt,
+  });
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`DB list failed (${res.status}): ${text}`);
-  }
+  return rowToRecord({
+    id: result.lastInsertRowid,
+    event_type: eventType,
+    payload: JSON.stringify(payload ?? {}),
+    client_ip: meta.client_ip,
+    user_agent: meta.user_agent,
+    created_at: createdAt,
+  });
+}
 
-  return res.json();
+function listByType(eventType, limit = 500) {
+  return listStmt.all(eventType, limit).map(rowToRecord);
 }
 
 function persist(eventType, payload, req) {
-  insertEvent(eventType, payload, req).catch((err) => {
+  try {
+    insertEvent(eventType, payload, req);
+  } catch (err) {
     console.error(`[db] Failed to persist ${eventType}:`, err.message);
-  });
+  }
 }
 
 module.exports = {
@@ -108,4 +110,5 @@ module.exports = {
   listByType,
   persist,
   getClientMeta,
+  DB_PATH,
 };

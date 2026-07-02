@@ -51,6 +51,6 @@ app.use("/api", apiRoutes);
 
 app.listen(PORT, () => {
   console.log(`waf-test-range listening on port ${PORT}`);
-  console.log(`Database: ${db.isConfigured() ? "InsForge connected" : "NOT configured — set INSFORGE_HOST + INSFORGE_API_KEY"}`);
+  console.log(`Database: SQLite at ${db.DB_PATH}`);
   console.log("WARNING: Intentionally insecure — WAF required in front of this app.");
 });
