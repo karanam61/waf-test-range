@@ -17,6 +17,7 @@ const path = require("path");
 const fs = require("fs");
 
 const apiRoutes = require("./routes/api");
+const redirectRoutes = require("./routes/redirect");
 const db = require("./db");
 
 const app = express();
@@ -47,6 +48,7 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
+app.use("/redirect", redirectRoutes);
 app.use("/api", apiRoutes);
 
 app.listen(PORT, () => {

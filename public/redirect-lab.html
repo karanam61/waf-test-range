@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Preview Lab — WAF Test Range</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>WAF Test Range</h1>
+    <nav>
+      <a href="/index.html">Home</a>
+      <a href="/search.html">Search</a>
+      <a href="/login.html">Login</a>
+      <a href="/comments.html">Comments</a>
+      <a href="/redirect-lab.html">Link Preview</a>
+    </nav>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Link Preview Lab (SSRF / redirect-validation)</h2>
+      <p>
+        Real apps often fetch a URL <strong>server-side</strong> to build link previews
+        (chat unfurl, webhook ping, import-from-URL). This page calls
+        <code>GET /redirect?url=...</code> — the server fetches the target and returns a snippet.
+        Radware should block dangerous targets <em>before</em> the origin fetches them.
+      </p>
+
+      <h3>Legitimate test</h3>
+      <form id="legitForm">
+        <label for="legitUrl">Public URL</label>
+        <input type="text" id="legitUrl" value="https://example.com" required>
+        <button type="submit">Preview link (server fetch)</button>
+      </form>
+
+      <h3>SSRF-style test (for WAF)</h3>
+      <p class="hint">Use only in your authorized lab. WAF should block these — app will not.</p>
+      <form id="ssrfForm">
+        <label for="ssrfUrl">Target URL</label>
+        <input type="text" id="ssrfUrl" placeholder="http://169.254.169.254/" required>
+        <button type="submit">Try fetch (expect WAF block)</button>
+      </form>
+
+      <h3>Open redirect (client-side, separate endpoint)</h3>
+      <p>
+        <code>GET /api/redirect?url=...</code> sends the <strong>browser</strong> to the URL (302).
+        <a href="/api/redirect?url=https://example.com">Try /api/redirect → example.com</a>
+      </p>
+
+      <pre id="output">Submit a form to see JSON from /redirect</pre>
+    </div>
+  </main>
+  <footer>&copy; <span id="year"></span> WAF Test Range — lab only</footer>
+  <script src="/js/main.js"></script>
+  <script>
+    async function runPreview(url) {
+      const res = await fetch("/redirect?url=" + encodeURIComponent(url));
+      const data = await res.json();
+      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+    }
+
+    document.getElementById("legitForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      runPreview(document.getElementById("legitUrl").value);
+    });
+
+    document.getElementById("ssrfForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      runPreview(document.getElementById("ssrfUrl").value);
+    });
+  </script>
+</body>
+</html>
