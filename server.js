@@ -18,6 +18,7 @@ const fs = require("fs");
 
 const apiRoutes = require("./routes/api");
 const redirectRoutes = require("./routes/redirect");
+const pathLab = require("./routes/path-lab");
 const db = require("./db");
 
 const app = express();
@@ -27,6 +28,9 @@ const uploadsDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
+
+// Create nested public directories for Path Access Protection tests
+pathLab.ensureTree();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -50,6 +54,9 @@ app.get("/health", (req, res) => {
 
 app.use("/redirect", redirectRoutes);
 app.use("/api", apiRoutes);
+
+// Path-lab: customer-like JSON POSTs + /path-lab/catalog
+app.use(pathLab.router);
 
 app.listen(PORT, () => {
   console.log(`waf-test-range listening on port ${PORT}`);

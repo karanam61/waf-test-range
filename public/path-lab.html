@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Path / Directory Lab — waf-test-range</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <main style="max-width: 820px; margin: 2rem auto; padding: 0 1rem;">
+    <h1>Path / Directory Lab</h1>
+    <p>
+      Nested directories and customer-like paths for Radware
+      <strong>Path Access Protection</strong> and JSON parameter refinement tests.
+      Authorized WAF lab only.
+    </p>
+
+    <h2>1. Nested static directories (Path Access)</h2>
+    <ul id="static-links"></ul>
+    <p>
+      Suggested Path Access regex to try:
+      <code>^/OTP/Gentax/Resource/.*</code>
+      (prefer this over <code>*.*</code> unless AppWall docs say the field is glob).
+    </p>
+
+    <h2>2. JSON parameter refinements (same-page, nested fields)</h2>
+    <p>
+      POST bodies echo back. Use SQLi probes in nested fields to validate rules like
+      <code>json\.details\.(location|streettype)</code>.
+    </p>
+
+    <label>
+      Target
+      <select id="target">
+        <option value="/node/v2/email/claim-failure">/node/v2/email/claim-failure</option>
+        <option value="/node/v2/email/claim-doc-submission">/node/v2/email/claim-doc-submission</option>
+        <option value="/node/v2/email/uw-doc-submission">/node/v2/email/uw-doc-submission</option>
+        <option value="/api/mwSubmitNote">/api/mwSubmitNote</option>
+        <option value="/api/submitClaim">/api/submitClaim</option>
+      </select>
+    </label>
+
+    <label style="display:block; margin-top: 0.75rem;">
+      JSON body
+      <textarea id="body" rows="10" style="width:100%; font-family: monospace;">{
+{
+  "details": {
+    "location": "normal street",
+    "streettype": "AVE"
+  },
+  "files": ["a.pdf"],
+  "notes": "hello",
+  "locus_of_event": "desk"
+}
+</textarea>
+    </label>
+
+    <p style="margin-top: 0.75rem;">
+      <button type="button" id="send">POST JSON</button>
+      <button type="button" id="sqli">Fill SQLi probe</button>
+    </p>
+    <pre id="out" style="background:#111; color:#ddd; padding:1rem; overflow:auto;"></pre>
+
+    <p><a href="/">← Home</a> · <a href="/path-lab/catalog">JSON catalog</a></p>
+  </main>
+  <script>
+    const samples = [
+      "/OTP/Gentax/Resource/WDC.min.js.v.382993438",
+      "/OTP/Gentax/Resource/Controls.External.DefaultExternal.min.css.v.697701574",
+      "/OTP/Gentax/Resource/WDC.External.DefaultExternal.min.css.v.255634733",
+      "/OTP/Gentax/Resource/readme.txt",
+      "/assets/vendor/lib/widget.min.js",
+      "/assets/vendor/lib/theme.css",
+      "/static/vendor/widgets/chart.js",
+      "/static/vendor/widgets/chart.css",
+      "/node/v2/email/claim-failure/",
+      "/node/v2/email/claim-doc-submission/",
+      "/node/v2/email/uw-doc-submission/",
+    ];
+    const ul = document.getElementById("static-links");
+    for (const u of samples) {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = u;
+      a.textContent = u;
+      a.target = "_blank";
+      li.appendChild(a);
+      ul.appendChild(li);
+    }
+
+    document.getElementById("sqli").onclick = () => {
+      document.getElementById("body").value = JSON.stringify(
+        {
+          details: {
+            location: "' OR 1=1--",
+            streettype: "' UNION SELECT NULL--",
+          },
+          files: ["'; DROP TABLE files--"],
+          notes: "admin'--",
+          locus_of_event: "1 OR 1=1",
+        },
+        null,
+        2
+      );
+    };
+
+    document.getElementById("send").onclick = async () => {
+      const target = document.getElementById("target").value;
+      const raw = document.getElementById("body").value;
+      const out = document.getElementById("out");
+      try {
+        const body = JSON.parse(raw);
+        const res = await fetch(target, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const text = await res.text();
+        out.textContent = `HTTP ${res.status}\n\n${text}`;
+      } catch (err) {
+        out.textContent = String(err);
+      }
+    };
+  </script>
+</body>
+</html>
