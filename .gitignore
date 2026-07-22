@@ -6,6 +6,7 @@ data/*.db
 data/*.db-*
 var/*.db
 var/*.db-*
+logs/*.csv
 .env
 .env.deploy
 .DS_Store

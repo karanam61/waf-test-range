@@ -3,36 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — WAF Test Range</title>
+  <title>Sign in — Atlas & Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <header>
-    <h1>WAF Test Range</h1>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/about.html">About</a>
-      <a href="/search.html">Search</a>
-      <a href="/login.html">Login</a>
-      <a href="/upload.html">Upload</a>
-      <a href="/profile.html">Profile</a>
-      <a href="/comments.html">Comments</a>
+  <header class="site-header">
+    <a class="brand" href="/index.html">Atlas & Co.<span>Outdoor outfitters</span></a>
+    <nav class="site-nav">
+      <a data-nav href="/index.html">Home</a>
+      <a data-nav href="/search.html">Shop</a>
+      <a data-nav href="/about.html">About</a>
+      <a data-nav href="/comments.html">Reviews</a>
+      <a data-nav href="/upload.html">Returns</a>
+      <a data-nav href="/profile.html">Account</a>
+      <a class="nav-cta" data-nav href="/login.html">Sign in</a>
     </nav>
   </header>
-  <main>
-    <div class="card">
-      <h2>Login</h2>
-      <form id="loginForm">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Sign In</button>
-      </form>
-      <pre id="result" class="result" style="display:none;"></pre>
+
+  <main class="page-shell">
+    <p class="eyebrow">Member access</p>
+    <h1 class="page-title">Sign in</h1>
+    <p class="page-lead">Access your Atlas account for orders, returns, and saved fits.</p>
+
+    <div class="auth-layout">
+      <div class="auth-visual">
+        <h2>Ready when the weather turns</h2>
+        <p>Members get early drops, repair credits, and trail-tested field notes.</p>
+      </div>
+      <div class="panel">
+        <form id="loginForm" class="form-grid">
+          <div>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" autocomplete="username" required>
+          </div>
+          <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required>
+          </div>
+          <button class="btn" type="submit">Sign in</button>
+        </form>
+        <pre id="result" class="result" style="display:none;"></pre>
+        <div class="lab-note">WAF endpoint unchanged: <code>POST /api/login</code> with JSON <code>username</code> / <code>password</code></div>
+      </div>
     </div>
   </main>
-  <footer>&copy; <span id="year"></span> WAF Test Range</footer>
+
+  <footer class="site-footer">
+    <div class="footer-meta">&copy; <span id="year"></span> Atlas & Co.</div>
+  </footer>
+
   <script src="/js/main.js"></script>
   <script>
     document.getElementById("loginForm").addEventListener("submit", async (e) => {

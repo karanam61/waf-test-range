@@ -3,44 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Search — WAF Test Range</title>
+  <title>Shop — Atlas & Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <header>
-    <h1>WAF Test Range</h1>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/about.html">About</a>
-      <a href="/search.html">Search</a>
-      <a href="/login.html">Login</a>
-      <a href="/upload.html">Upload</a>
-      <a href="/profile.html">Profile</a>
-      <a href="/comments.html">Comments</a>
+  <header class="site-header">
+    <a class="brand" href="/index.html">Atlas & Co.<span>Outdoor outfitters</span></a>
+    <nav class="site-nav">
+      <a data-nav href="/index.html">Home</a>
+      <a data-nav href="/search.html">Shop</a>
+      <a data-nav href="/about.html">About</a>
+      <a data-nav href="/comments.html">Reviews</a>
+      <a data-nav href="/upload.html">Returns</a>
+      <a data-nav href="/profile.html">Account</a>
+      <a class="nav-cta" data-nav href="/login.html">Sign in</a>
     </nav>
   </header>
-  <main>
-    <div class="card">
-      <h2>Product Search</h2>
-      <form id="searchForm">
-        <label for="q">Search products</label>
-        <input type="text" id="q" name="q" placeholder="widget">
-        <button type="submit">Search</button>
+
+  <main class="page-shell">
+    <p class="eyebrow">Catalog</p>
+    <h1 class="page-title">Shop trail gear</h1>
+    <p class="page-lead">Search packs, layers, footwear, and camp kits. Results come from the live product API.</p>
+
+    <div class="panel">
+      <form id="searchForm" class="form-grid">
+        <div>
+          <label for="q">Search the catalog</label>
+          <div class="search-bar">
+            <input type="text" id="q" name="q" placeholder="Try ridge, merino, flask…">
+            <button class="btn" type="submit">Search</button>
+          </div>
+        </div>
       </form>
-      <pre id="result" class="result" style="display:none;"></pre>
+      <p id="meta" class="result-meta"></p>
+      <div id="results" class="product-grid results"></div>
+      <div class="lab-note">WAF endpoint unchanged: <code>GET /api/search?q=</code></div>
     </div>
   </main>
-  <footer>&copy; <span id="year"></span> WAF Test Range</footer>
+
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div>
+        <h3>Atlas & Co.</h3>
+        <p>Find gear fast, then take it outside.</p>
+      </div>
+      <div>
+        <h3>Shop</h3>
+        <a href="/search.html">Catalog search</a>
+        <a href="/login.html">Member sign in</a>
+      </div>
+      <div>
+        <h3>Labs</h3>
+        <div class="lab-links">
+          <a href="/path-lab.html">Path lab</a>
+          <a href="/redirect-lab.html">Redirect lab</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-meta">&copy; <span id="year"></span> Atlas & Co.</div>
+  </footer>
+
   <script src="/js/main.js"></script>
   <script>
+    const meta = document.getElementById("meta");
+    const results = document.getElementById("results");
+
+    async function runSearch(q) {
+      const data = await getJson(`/api/search?q=${encodeURIComponent(q)}`);
+      meta.textContent = q
+        ? `${(data.results || []).length} result(s) for “${data.query}”`
+        : `${(data.results || []).length} products in stock`;
+      renderProducts(results, data.results || []);
+    }
+
     document.getElementById("searchForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const q = document.getElementById("q").value;
-      const data = await getJson(`/api/search?q=${encodeURIComponent(q)}`);
-      const out = document.getElementById("result");
-      out.style.display = "block";
-      out.textContent = JSON.stringify(data, null, 2);
+      await runSearch(document.getElementById("q").value.trim());
     });
+
+    runSearch("");
   </script>
 </body>
 </html>

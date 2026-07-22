@@ -3,23 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Link Preview Lab — WAF Test Range</title>
+  <title>Link Preview Lab — Atlas & Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <header>
-    <h1>WAF Test Range</h1>
-    <nav>
+  <header class="site-header">
+    <a class="brand" href="/index.html">Atlas & Co.<span>Outdoor outfitters</span></a>
+    <nav class="site-nav">
       <a href="/index.html">Home</a>
-      <a href="/search.html">Search</a>
-      <a href="/login.html">Login</a>
-      <a href="/comments.html">Comments</a>
-      <a href="/redirect-lab.html">Link Preview</a>
+      <a href="/search.html">Shop</a>
+      <a href="/login.html">Sign in</a>
+      <a class="nav-cta" href="/redirect-lab.html">Redirect lab</a>
     </nav>
   </header>
-  <main>
-    <div class="card">
-      <h2>Link Preview Lab (SSRF / redirect-validation)</h2>
+  <main class="page-shell">
+    <div class="panel">
+      <p class="eyebrow">WAF lab</p>
+      <h1 class="page-title">Link Preview Lab</h1>
       <p>
         Real apps often fetch a URL <strong>server-side</strong> to build link previews
         (chat unfurl, webhook ping, import-from-URL). This page calls

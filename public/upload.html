@@ -3,34 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload — WAF Test Range</title>
+  <title>Returns — Atlas & Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <header>
-    <h1>WAF Test Range</h1>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/about.html">About</a>
-      <a href="/search.html">Search</a>
-      <a href="/login.html">Login</a>
-      <a href="/upload.html">Upload</a>
-      <a href="/profile.html">Profile</a>
-      <a href="/comments.html">Comments</a>
+  <header class="site-header">
+    <a class="brand" href="/index.html">Atlas & Co.<span>Outdoor outfitters</span></a>
+    <nav class="site-nav">
+      <a data-nav href="/index.html">Home</a>
+      <a data-nav href="/search.html">Shop</a>
+      <a data-nav href="/about.html">About</a>
+      <a data-nav href="/comments.html">Reviews</a>
+      <a data-nav href="/upload.html">Returns</a>
+      <a data-nav href="/profile.html">Account</a>
+      <a class="nav-cta" data-nav href="/login.html">Sign in</a>
     </nav>
   </header>
-  <main>
-    <div class="card">
-      <h2>File Upload</h2>
-      <form id="uploadForm" enctype="multipart/form-data">
-        <label for="file">Choose a file</label>
-        <input type="file" id="file" name="file" required>
-        <button type="submit">Upload</button>
+
+  <main class="page-shell">
+    <p class="eyebrow">Returns desk</p>
+    <h1 class="page-title">Upload return photos</h1>
+    <p class="page-lead">Send a clear photo of the item and packing slip so we can process exchanges faster.</p>
+
+    <div class="panel">
+      <form id="uploadForm" class="form-grid" enctype="multipart/form-data">
+        <div>
+          <label for="file">Choose a photo or document</label>
+          <input type="file" id="file" name="file" required>
+        </div>
+        <button class="btn" type="submit">Upload</button>
       </form>
       <pre id="result" class="result" style="display:none;"></pre>
+      <div class="lab-note">WAF endpoint unchanged: <code>POST /api/upload</code></div>
     </div>
   </main>
-  <footer>&copy; <span id="year"></span> WAF Test Range</footer>
+
+  <footer class="site-footer">
+    <div class="footer-meta">&copy; <span id="year"></span> Atlas & Co.</div>
+  </footer>
+
   <script src="/js/main.js"></script>
   <script>
     document.getElementById("uploadForm").addEventListener("submit", async (e) => {

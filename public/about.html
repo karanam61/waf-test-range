@@ -3,31 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About — WAF Test Range</title>
+  <title>About — Atlas & Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <header>
-    <h1>WAF Test Range</h1>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/about.html">About</a>
-      <a href="/search.html">Search</a>
-      <a href="/login.html">Login</a>
-      <a href="/upload.html">Upload</a>
-      <a href="/profile.html">Profile</a>
-      <a href="/comments.html">Comments</a>
+  <header class="site-header">
+    <a class="brand" href="/index.html">Atlas & Co.<span>Outdoor outfitters</span></a>
+    <nav class="site-nav">
+      <a data-nav href="/index.html">Home</a>
+      <a data-nav href="/search.html">Shop</a>
+      <a data-nav href="/about.html">About</a>
+      <a data-nav href="/comments.html">Reviews</a>
+      <a data-nav href="/upload.html">Returns</a>
+      <a data-nav href="/profile.html">Account</a>
+      <a class="nav-cta" data-nav href="/login.html">Sign in</a>
     </nav>
   </header>
-  <main>
-    <div class="card">
-      <h2>About Us</h2>
-      <p>WAF Test Range is a fictional corporate portal maintained by the internal security engineering team. It simulates a typical small business web application with catalog search, user accounts, file sharing, and feedback forms.</p>
-      <p>This site exists solely to generate realistic HTTP traffic patterns for Web Application Firewall policy validation. It is not a production service and must always run behind a WAF in a restricted network.</p>
-      <p>Learn more on the <a href="/index.html">homepage</a> or try the <a href="/search.html">product search</a>.</p>
+
+  <main class="page-shell">
+    <p class="eyebrow">Our story</p>
+    <h1 class="page-title">Gear for weather that doesn’t wait</h1>
+    <p class="page-lead">Atlas & Co. designs trail packs, layers, and camp tools for people who leave before sunrise and come back muddy.</p>
+
+    <div class="panel">
+      <h2 style="margin-top:0;font-size:1.6rem;">What we make</h2>
+      <p>A tight catalog — not endless SKUs. Every piece is chosen for durability, repairability, and real trail use. Search the shop, leave a review after your trip, or upload return photos if something doesn’t fit.</p>
+      <p>This storefront also doubles as an authorized WAF testing target, so security teams can validate policies against realistic e-commerce traffic.</p>
+      <a class="btn btn-ink" href="/search.html">Explore the catalog</a>
     </div>
   </main>
-  <footer>&copy; <span id="year"></span> WAF Test Range</footer>
+
+  <footer class="site-footer">
+    <div class="footer-meta">&copy; <span id="year"></span> Atlas & Co. — Authorized security testing storefront</div>
+  </footer>
   <script src="/js/main.js"></script>
 </body>
 </html>

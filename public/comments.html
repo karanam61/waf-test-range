@@ -3,51 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comments — WAF Test Range</title>
+  <title>Reviews — Atlas & Co.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <header>
-    <h1>WAF Test Range</h1>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/about.html">About</a>
-      <a href="/search.html">Search</a>
-      <a href="/login.html">Login</a>
-      <a href="/upload.html">Upload</a>
-      <a href="/profile.html">Profile</a>
-      <a href="/comments.html">Comments</a>
+  <header class="site-header">
+    <a class="brand" href="/index.html">Atlas & Co.<span>Outdoor outfitters</span></a>
+    <nav class="site-nav">
+      <a data-nav href="/index.html">Home</a>
+      <a data-nav href="/search.html">Shop</a>
+      <a data-nav href="/about.html">About</a>
+      <a data-nav href="/comments.html">Reviews</a>
+      <a data-nav href="/upload.html">Returns</a>
+      <a data-nav href="/profile.html">Account</a>
+      <a class="nav-cta" data-nav href="/login.html">Sign in</a>
     </nav>
   </header>
-  <main>
-    <div class="card">
-      <h2>Comments Board</h2>
-      <form id="commentForm">
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" required>
-        <label for="comment">Comment</label>
-        <textarea id="comment" name="comment" rows="4" required></textarea>
-        <button type="submit">Post Comment</button>
+
+  <main class="page-shell">
+    <p class="eyebrow">Field notes</p>
+    <h1 class="page-title">Customer reviews</h1>
+    <p class="page-lead">Share how the gear held up after weather, miles, and packing mistakes.</p>
+
+    <div class="panel">
+      <form id="commentForm" class="form-grid">
+        <div>
+          <label for="name">Your name</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+        <div>
+          <label for="comment">Review</label>
+          <textarea id="comment" name="comment" rows="4" placeholder="Fit, weather performance, what you’d pack next time…" required></textarea>
+        </div>
+        <button class="btn" type="submit">Post review</button>
       </form>
+      <div class="lab-note">WAF endpoint unchanged: <code>POST /api/comments</code></div>
     </div>
-    <div class="card">
-      <h3>All Comments</h3>
+
+    <div class="panel">
+      <h2 style="margin-top:0;font-size:1.45rem;">Latest reviews</h2>
       <div id="commentsList"></div>
     </div>
   </main>
-  <footer>&copy; <span id="year"></span> WAF Test Range</footer>
+
+  <footer class="site-footer">
+    <div class="footer-meta">&copy; <span id="year"></span> Atlas & Co.</div>
+  </footer>
+
   <script src="/js/main.js"></script>
   <script>
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
     async function loadComments() {
       const comments = await getJson("/api/comments");
       const list = document.getElementById("commentsList");
-      list.innerHTML = "";
-      comments.forEach((c) => {
-        const div = document.createElement("div");
-        div.className = "comment";
-        div.innerHTML = `<strong>${c.name}</strong><br>${c.comment}`;
-        list.appendChild(div);
-      });
+      if (!comments.length) {
+        list.innerHTML = `<p class="result-meta">No reviews yet — be the first on the trail.</p>`;
+        return;
+      }
+      list.innerHTML = comments
+        .slice()
+        .reverse()
+        .map((c) => `
+          <article class="review">
+            <strong>${escapeHtml(c.name || "Anonymous")}</strong>
+            <time>${escapeHtml(c.createdAt || "")}</time>
+            <p>${escapeHtml(c.comment || "")}</p>
+          </article>
+        `)
+        .join("");
     }
 
     document.getElementById("commentForm").addEventListener("submit", async (e) => {

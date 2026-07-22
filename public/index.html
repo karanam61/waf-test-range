@@ -3,40 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WAF Test Range — Home</title>
+  <title>Atlas & Co. — Trail Gear</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <header>
-    <h1>WAF Test Range</h1>
-    <nav>
-      <a href="/index.html">Home</a>
-      <a href="/about.html">About</a>
-      <a href="/search.html">Search</a>
-      <a href="/login.html">Login</a>
-      <a href="/upload.html">Upload</a>
-      <a href="/profile.html">Profile</a>
-      <a href="/comments.html">Comments</a>
-      <a href="/path-lab.html">Path Lab</a>
+  <header class="site-header">
+    <a class="brand" href="/index.html">Atlas & Co.<span>Outdoor outfitters</span></a>
+    <nav class="site-nav">
+      <a data-nav href="/index.html">Home</a>
+      <a data-nav href="/search.html">Shop</a>
+      <a data-nav href="/about.html">About</a>
+      <a data-nav href="/comments.html">Reviews</a>
+      <a data-nav href="/upload.html">Returns</a>
+      <a data-nav href="/profile.html">Account</a>
+      <a class="nav-cta" data-nav href="/login.html">Sign in</a>
     </nav>
   </header>
-  <main>
-    <div class="card">
-      <h2>Internal Security Testing Portal</h2>
-      <p>Welcome to the WAF Test Range — a deliberately vulnerable application used to validate Radware WAF/CSMS detection policies.</p>
-      <p>Use the navigation above to exercise static pages and API-backed features behind your WAF.</p>
-      <ul>
-        <li><a href="/search.html">Product Search</a></li>
-        <li><a href="/login.html">User Login</a></li>
-        <li><a href="/upload.html">File Upload</a></li>
-        <li><a href="/profile.html">User Profile Lookup</a></li>
-        <li><a href="/comments.html">Comments Board</a></li>
-        <li><a href="/redirect-lab.html">Link Preview / SSRF Lab</a></li>
-        <li><a href="/path-lab.html">Path / Directory Lab</a></li>
-      </ul>
+
+  <section class="hero">
+    <div class="hero-media" aria-hidden="true"></div>
+    <div class="hero-content">
+      <strong class="hero-brand">Atlas & Co.</strong>
+      <p class="hero-copy">Packs, layers, and trail tools built for weather that doesn’t wait. Ship ready for the next ridge.</p>
+      <div class="hero-actions">
+        <a class="btn" href="/search.html">Shop the trail edit</a>
+        <a class="btn btn-ghost" href="/about.html">Our story</a>
+      </div>
     </div>
-  </main>
-  <footer>&copy; <span id="year"></span> WAF Test Range — Authorized testing only</footer>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Featured gear</p>
+        <h2>Built for long days outside</h2>
+        <p>A focused lineup of packs, layers, and camp essentials — searchable through the live catalog API.</p>
+      </div>
+      <a class="btn btn-ink" href="/search.html">Browse all</a>
+    </div>
+    <div id="featured" class="product-grid"></div>
+  </section>
+
+  <section class="band">
+    <div class="band-inner">
+      <p class="eyebrow" style="color: var(--sand);">Field notes</p>
+      <h2>Real reviews from the trail</h2>
+      <p>Customers leave product notes after each trip. Read them or leave your own — same flow, storefront style.</p>
+      <div>
+        <a class="btn" href="/comments.html">Read reviews</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div>
+        <h3>Atlas & Co.</h3>
+        <p>Trail-ready gear for weekenders and thru-hikers. This storefront also powers WAF policy labs behind the scenes.</p>
+      </div>
+      <div>
+        <h3>Shop</h3>
+        <a href="/search.html">Catalog search</a>
+        <a href="/login.html">Member sign in</a>
+        <a href="/profile.html">Order lookup</a>
+        <a href="/upload.html">Return photos</a>
+      </div>
+      <div>
+        <h3>Company</h3>
+        <a href="/about.html">About</a>
+        <a href="/comments.html">Reviews</a>
+        <div class="lab-links">
+          <a href="/path-lab.html">Path lab</a>
+          <a href="/redirect-lab.html">Redirect lab</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-meta">&copy; <span id="year"></span> Atlas & Co. — Authorized security testing storefront</div>
+  </footer>
+
   <script src="/js/main.js"></script>
+  <script>
+    (async () => {
+      const data = await getJson("/api/search?q=");
+      renderProducts(document.getElementById("featured"), (data.results || []).slice(0, 4));
+    })();
+  </script>
 </body>
 </html>
